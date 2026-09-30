@@ -1,0 +1,64 @@
+-- [[ é…ç½®åŒº ]]
+local REAPPLY_ON_RESPAWN = true
+local message = "-gh 17375337078 17270178857 17270001635 17269952801 17269983359 17269998373 17270231731  17270225913 17326812233 17326800544"
+
+local player = game:GetService("Players").LocalPlayer
+local runService = game:GetService("RunService")
+local lastChar = nil
+
+-- [[ å‘é€é€šçŸ¥å‡½æ•° ]]
+local function sendNotice()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "immortality lord man";
+        Text = "Rig made by @testingaccount23804"; 
+        Duration = 2;
+    })
+end
+
+-- [[ æ ¸å¿ƒæ³¨å…¥é€»è¾‘ ]]
+local function runChatInjection()
+    -- å°è¯•å¤šç§è·¯å¾„å‘é€ï¼Œç¡®ä¿è¦†ç›–æ‰€æœ‰ç‰ˆæœ¬çš„èŠå¤©å®¤
+    local tcs = game:GetService("TextChatService")
+    local rs = game:GetService("ReplicatedStorage")
+    
+    -- æ–¹æ¡ˆ A: æ–°ç‰ˆ API
+    if tcs.ChatVersion == Enum.ChatVersion.TextChatService then
+        local channel = tcs:FindFirstChild("RBXGeneral", true) or tcs:FindFirstChildOfClass("TextChannel", true)
+        if channel then channel:SendAsync(message) end
+    end
+    
+    -- æ–¹æ¡ˆ B: æ—§ç‰ˆ/é€šç”¨è¿œç¨‹äº‹ä»¶
+    local legacyEvent = rs:FindFirstChild("SayMessageRequest", true)
+    if legacyEvent then
+        legacyEvent:FireServer(message, "All")
+    end
+    
+    sendNotice()
+end
+
+-- [[ ç²¾å‡†è§’è‰²æ£€æµ‹å¾ªçŽ¯ ]]
+runService.Heartbeat:Connect(function()
+    if not REAPPLY_ON_RESPAWN then return end
+    
+    local char = player.Character
+    -- å…³é”®ï¼šä¸ä»…è¦ Character å­˜åœ¨ï¼Œè¿˜è¦ HumanoidRootPart å·²ç»åŠ è½½ï¼ˆè¿™æ„å‘³ç€ä½ å·²ç»å®žä½“åŒ–äº†ï¼‰
+    if char and char ~= lastChar then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        
+        if root then
+            -- è®°å½•å½“å‰è§’è‰²ï¼Œé˜²æ­¢åœ¨åŒä¸€æ¡å‘½é‡Œé‡å¤è§¦å‘
+            lastChar = char
+            
+            -- åœ¨å®žä½“å‡ºçŽ°çš„ä¸‹ä¸€å¸§ç«‹å³æ‰§è¡Œï¼Œä¿è¯æœåŠ¡å™¨èƒ½è¯†åˆ«åˆ°ä½ çš„èº«ä»½
+            task.defer(function()
+                runChatInjection()
+            end)
+        end
+    end
+end)
+
+-- åˆå§‹å¯åŠ¨
+if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+    lastChar = player.Character
+    runChatInjection()
+end
